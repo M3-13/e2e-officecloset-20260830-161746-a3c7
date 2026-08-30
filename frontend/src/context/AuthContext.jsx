@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { request } from '../api.js';
 
 const AuthContext = createContext(null);
 
@@ -12,12 +13,26 @@ export function AuthProvider({ children }) {
     }
   });
 
-  const login = useCallback(async () => {
-    // Stub: die echte Anmeldung wird in Ticket #9 umgesetzt.
+  const login = useCallback(async (email, password) => {
+    const data = await request('POST', '/api/auth/login', { email, password });
+    const accessToken = data.access_token;
+    const currentUser = { email };
+    localStorage.setItem('token', accessToken);
+    localStorage.setItem('user', JSON.stringify(currentUser));
+    setToken(accessToken);
+    setUser(currentUser);
+    return data;
   }, []);
 
-  const register = useCallback(async () => {
-    // Stub: die echte Registrierung wird in Ticket #9 umgesetzt.
+  const register = useCallback(async (email, password) => {
+    const data = await request('POST', '/api/auth/register', { email, password });
+    const accessToken = data.access_token;
+    const currentUser = { email };
+    localStorage.setItem('token', accessToken);
+    localStorage.setItem('user', JSON.stringify(currentUser));
+    setToken(accessToken);
+    setUser(currentUser);
+    return data;
   }, []);
 
   const logout = useCallback(() => {
